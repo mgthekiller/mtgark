@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>صفحة المنتج</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f2f2f2;
+            direction: rtl;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 50px auto;
+            display: flex;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+        }
+        .product-images {
+            width: 50%;
+            text-align: center;
+        }
+        .main-image {
+            width: 100%;
+            height: 500px;
+            object-fit: contain;
+            border-radius: 10px;
+            border: 1px solid #ddd;
+        }
+        .thumbnails {
+            display: flex;
+            justify-content: center;
+            margin-top: 10px;
+        }
+        .thumbnails img {
+            width: 80px;
+            height: 80px;
+            margin: 5px;
+            cursor: pointer;
+            border: 2px solid transparent;
+            border-radius: 5px;
+            transition: 0.3s;
+        }
+        .thumbnails img:hover, .thumbnails img.active {
+            border: 2px solid #ff7b00;
+        }
+        .details {
+            flex: 1;
+            padding: 0 30px;
+        }
+        h1 {
+            font-size: 28px;
+            color: #333;
+        }
+        .price {
+            font-size: 24px;
+            color: #ff7b00;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+        .description {
+            font-size: 18px;
+            color: #555;
+            margin-bottom: 20px;
+        }
+        .btns {
+            display: flex;
+            gap: 15px;
+        }
+        .btn {
+            background: linear-gradient(90deg, #ff7b00, #ff4800);
+            color: white;
+            padding: 12px 20px;
+            font-size: 18px;
+            font-weight: bold;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: 0.3s;
+            flex: 1;
+        }
+        .btn:hover {
+            background: linear-gradient(90deg, #ff4800, #ff7b00);
+        }
+    </style>
+</head>
+<body onload="loadProductDetails()">
+    <div class="container">
+        <div class="product-images">
+            <img id="mainImage" src="img/product1.jpg" class="main-image">
+            <div class="thumbnails">
+                <img src="img/product1.jpg" onclick="changeImage(this)" class="active">
+                <img src="img/product2.jpg" onclick="changeImage(this)">
+                <img src="img/product3.jpg" onclick="changeImage(this)">
+            </div>
+        </div>
+        <div class="details">
+            <h1 id="productName">اسم المنتج</h1>
+            <p class="price" id="productPrice">السعر: <strong>150$</strong></p>
+            <p class="description" id="productDescription">منتج رائع بمواصفات متميزة وجودة عالية</p>
+            <div class="btns">
+                <button class="btn" onclick="addToCart()">إضافة إلى السلة</button>
+                <button class="btn" onclick="buyNow()">شراء الآن</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function changeImage(element) {
+            let mainImage = document.getElementById('mainImage');
+            mainImage.src = element.src;
+            document.querySelectorAll('.thumbnails img').forEach(img => {
+                img.classList.remove('active');
+            });
+            element.classList.add('active');
+        }
+
+        function addToCart() {
+            let product = {
+                name: document.getElementById('productName').innerText,
+                price: document.getElementById('productPrice').innerText,
+                description: document.getElementById('productDescription').innerText,
+                image: document.getElementById('mainImage').src
+            };
+
+            let cart = JSON.parse(localStorage.getItem('cart')) || [];
+            cart.push(product);
+            localStorage.setItem('cart', JSON.stringify(cart));
+
+            alert("تمت الإضافة إلى السلة!");
+        }
+
+        function loadProductDetails() {
+            let cart = JSON.parse(localStorage.getItem('cart')) || [];
+            let cartContainer = document.getElementById('cart-items');
+
+            if (cart.length > 0) {
+                cartContainer.innerHTML = "<h2>عربة التسوق</h2>";
+                cart.forEach((product, index) => {
+                    cartContainer.innerHTML += `
+                        <div class="cart-item">
+                            <img src="${product.image}" width="80" height="80">
+                            <p>${product.name}</p>
+                            <p>السعر: ${product.price}</p>
+                            <button onclick="removeFromCart(${index})">إزالة</button>
+                        </div>
+                    `;
+                });
+            }
+        }
+
+        function removeFromCart(index) {
+            let cart = JSON.parse(localStorage.getItem('cart')) || [];
+            cart.splice(index, 1);
+            localStorage.setItem('cart', JSON.stringify(cart));
+            loadProductDetails();
+        }
+    </script>
+</body>
+</html>

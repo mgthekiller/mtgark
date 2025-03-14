@@ -1,63 +1,45 @@
-import { db } from "./firebase-config.js";
-import { collection, getDocs, addDoc, doc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.2/firebase-app.js";
+import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.7.2/firebase-firestore.js";
 
-// مرجع لقاعدة البيانات
-const productsCollection = collection(db, "products");
+// إعداد Firebase
+const firebaseConfig = {
+  apiKey: "AIzaSyC235xZqDjD6ZitQc6u6F1928vLYhd5Xys",
+  authDomain: "matgrak-53f09.firebaseapp.com",
+  projectId: "matgrak-53f09",
+  storageBucket: "matgrak-53f09.appspot.com",
+  messagingSenderId: "785925288214",
+  appId: "1:785925288214:web:33b74203635e357a99e037",
+  measurementId: "G-R8Y2V6MY2S"
+};
 
-// تحميل المنتجات عند فتح الصفحة
-async function loadProducts() {
-    const productsContainer = document.getElementById("admin-products");
-    productsContainer.innerHTML = ""; // مسح المحتوى القديم
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
 
-    const querySnapshot = await getDocs(productsCollection);
-    querySnapshot.forEach((docSnap) => {
-        const product = docSnap.data();
-        const productId = docSnap.id; // معرف المنتج في Firestore
+document.getElementById("productForm").addEventListener("submit", async function(event) {
+    event.preventDefault();
 
-        const productElement = `
-            <div class="product">
-                <img src="${product.image}" alt="${product.name}">
-                <h3>${product.name}</h3>
-                <p>${product.description}</p>
-                <span>السعر: $${product.price}</span>
-                <button class="delete-product" data-id="${productId}">🗑️ حذف</button>
-            </div>
-        `;
-        productsContainer.innerHTML += productElement;
-    });
+    const name = document.getElementById("productName").value.trim();
+    const price = document.getElementById("productPrice").value.trim();
+    const description = document.getElementById("productDescription").value.trim();
+    const imageUrl = document.getElementById("productImage").value.trim(); // رابط الصورة مباشرة
 
-    // إضافة حدث الحذف لكل زر
-    document.querySelectorAll(".delete-product").forEach(button => {
-        button.addEventListener("click", async function () {
-            const productId = this.getAttribute("data-id");
-            const confirmDelete = confirm("❌ هل أنت متأكد أنك تريد حذف هذا المنتج؟");
-            if (confirmDelete) {
-                await deleteDoc(doc(db, "products", productId));
-                alert("✅ تم حذف المنتج بنجاح!");
-                loadProducts(); // تحديث القائمة بعد الحذف
-            }
+    if (!name || !price || !description || !imageUrl) {
+        alert("❌ يرجى ملء جميع الحقول!");
+        return;
+    }
+
+    try {
+        await addDoc(collection(db, "products"), {
+            name,
+            price: parseFloat(price),
+            description,
+            image: imageUrl // استخدام رابط الصورة مباشرة
         });
-    });
-}
 
-// إضافة منتج جديد
-document.getElementById("productForm").addEventListener("submit", async (e) => {
-    e.preventDefault();
-
-    const name = document.getElementById("productName").value;
-    const price = document.getElementById("productPrice").value;
-    const image = document.getElementById("productImage").value;
-    const description = document.getElementById("productDescription").value;
-
-    if (name && price && image && description) {
-        await addDoc(productsCollection, { name, price, image, description });
         alert("✅ تم إضافة المنتج بنجاح!");
-        loadProducts(); // تحديث القائمة بعد الإضافة
-        document.getElementById("productForm").reset(); // مسح الحقول
-    } else {
-        alert("❌ الرجاء ملء جميع الحقول!");
+        document.getElementById("productForm").reset();
+    } catch (error) {
+        console.error("❌ خطأ أثناء إضافة المنتج:", error);
+        alert("حدث خطأ أثناء إضافة المنتج، حاول مرة أخرى!");
     }
 });
-
-// تحميل المنتجات عند فتح الصفحة
-document.addEventListener("DOMContentLoaded", loadProducts);

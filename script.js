@@ -6,7 +6,7 @@ const firebaseConfig = {
   apiKey: "AIzaSyC235xZqDjD6ZitQc6u6F1928vLYhd5Xys",
   authDomain: "matgrak-53f09.firebaseapp.com",
   projectId: "matgrak-53f09",
-  storageBucket: "matgrak-53f09.firebasestorage.app",
+  storageBucket: "matgrak-53f09.appspot.com",
   messagingSenderId: "785925288214",
   appId: "1:785925288214:web:33b74203635e357a99e037",
   measurementId: "G-R8Y2V6MY2S"
@@ -41,35 +41,44 @@ async function loadProducts() {
 function setupEventListeners() {
     const searchBar = document.getElementById("search-bar");
     const searchButton = document.querySelector(".search .btn");
-    const products = document.querySelectorAll(".product");
     
     searchButton.addEventListener("click", function () {
         const searchTerm = searchBar.value.toLowerCase();
-        products.forEach(product => {
+        document.querySelectorAll(".product").forEach(product => {
             const productName = product.querySelector("h3").textContent.toLowerCase();
-            if (productName.includes(searchTerm)) {
-                product.style.display = "block";
-            } else {
-                product.style.display = "none";
-            }
+            product.style.display = productName.includes(searchTerm) ? "block" : "none";
         });
     });
 
-    const cartItems = document.querySelector(".cart-items");
-    const addToCartButtons = document.querySelectorAll(".product .btn");
-
-    addToCartButtons.forEach(button => {
+    document.querySelectorAll(".add-to-cart").forEach(button => {
         button.addEventListener("click", function () {
-            const product = this.parentElement;
-            const productName = product.querySelector("h3").textContent;
-            const productPrice = product.querySelector("span").textContent;
-            
-            const cartItem = document.createElement("p");
-            cartItem.textContent = `${productName} - ${productPrice}`;
-            cartItems.appendChild(cartItem);
+            let cart = JSON.parse(localStorage.getItem("cart")) || [];
+            let name = this.getAttribute("data-name");
+            let price = this.getAttribute("data-price");
+            cart.push({ name, price });
+            localStorage.setItem("cart", JSON.stringify(cart));
+            updateCart();
         });
     });
 }
 
-// تحميل المنتجات عند فتح الصفحة
-document.addEventListener("DOMContentLoaded", loadProducts);
+function updateCart() {
+    let cart = JSON.parse(localStorage.getItem("cart")) || [];
+    let cartContainer = document.querySelector(".cart-items");
+    cartContainer.innerHTML = "";
+    
+    if (cart.length === 0) {
+        cartContainer.innerHTML = "<p>لم يتم إضافة منتجات بعد</p>";
+    } else {
+        cart.forEach(item => {
+            let cartItem = document.createElement("p");
+            cartItem.textContent = `${item.name} - $${item.price}`;
+            cartContainer.appendChild(cartItem);
+        });
+    }
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+    loadProducts();
+    updateCart();
+});

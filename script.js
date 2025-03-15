@@ -79,44 +79,50 @@ function updateCart() {
     }
 }
 
-async function handleCheckout() {
+function handleCheckout() {
     let fullName = prompt("📝 أدخل اسمك الثلاثي:");
     let address = prompt("📍 أدخل عنوانك:");
     let phone = prompt("📞 أدخل رقم هاتفك:");
     let paymentMethod = prompt("💰 أدخل طريقة الدفع (يجب أن تكون 'الدفع عند الاستلام'):");
-    
+
     if (!fullName || !address || !phone || paymentMethod !== "الدفع عند الاستلام") {
         alert("❌ يجب إدخال جميع البيانات بشكل صحيح وطريقة الدفع يجب أن تكون 'الدفع عند الاستلام'!");
         return;
     }
-    
+
     let cart = JSON.parse(localStorage.getItem("cart")) || [];
     if (cart.length === 0) {
         alert("🛒 سلتك فارغة!");
         return;
     }
-    
+
     let orderDetails = `**طلب جديد**\n👤 الاسم: ${fullName}\n📍 العنوان: ${address}\n📞 الهاتف: ${phone}\n💰 الدفع: ${paymentMethod}\n🛒 المنتجات:\n`;
     cart.forEach((item, index) => {
         orderDetails += `${index + 1}. ${item.name} - $${item.price}\n`;
     });
-    
+
     const webhookUrl = "https://discord.com/api/webhooks/1350575761320443945/ncjMSg8jbcEN7OdjXHh53eDezexeAMpxBBgx23WqL0L16hbqoYCRxT0RFuCJVtTotdmd";
-    
-    try {
-        await fetch(webhookUrl, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ content: orderDetails })
-        });
+
+    fetch(webhookUrl, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ content: orderDetails })
+    })
+    .then(() => {
         alert("✅ تم إرسال الطلب بنجاح!");
         localStorage.removeItem("cart");
         updateCart();
-    } catch (error) {
+    })
+    .catch(error => {
         console.error("❌ خطأ في إرسال الطلب:", error);
         alert("حدث خطأ أثناء إرسال الطلب، حاول مرة أخرى!");
-    }
+    });
 }
+
+document.addEventListener("DOMContentLoaded", function () {
+    document.getElementById("confirm-order").addEventListener("click", handleCheckout);
+});
+
 
 document.addEventListener("DOMContentLoaded", () => {
     loadProducts();

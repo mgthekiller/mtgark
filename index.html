@@ -57,103 +57,13 @@
 
     <section id="checkout" class="checkout">
         <h2>إتمام الشراء</h2>
-        <form action="#" method="post">
-            <label for="name">الاسم الكامل:</label>
-            <input type="text" id="name" name="name" required>
-            
-            <label for="address">العنوان:</label>
-            <input type="text" id="address" name="address" required>
-            
-            <label for="payment">طريقة الدفع:</label>
-            <select id="payment" name="payment">
-                <option value="credit">بطاقة الائتمان</option>
-                <option value="paypal">PayPal</option>
-                <option value="cod">الدفع عند الاستلام</option>
-            </select>
-            
-            <button type="submit" class="btn">إتمام الطلب</button>
-        </form>
+        <button id="confirm-order" class="btn">🚀 تأكيد الطلب الآن</button>
     </section>
-    <form id="checkout-form">
-        <label for="full-name">📝 الاسم الكامل:</label>
-        <input type="text" id="full-name" placeholder="أدخل اسمك هنا" required class ="textarea">
-    
-        <label for="phone">📞 رقم الهاتف:</label>
-        <input type="tel" id="phone" placeholder="أدخل رقم هاتفك" required class ="textarea">
-    
-        <label for="address">📍 العنوان:</label>
-        <input type="text" id="address" placeholder="أدخل عنوان التوصيل" required class ="textarea">
-    
-        <label for="total-price">💰 إجمالي السعر:</label>
-        <input type="number" id="total-price" value="150" readonly>
-    
-        <label for="deposit">💳 ادفع عربون (لتأكيد الطلب):</label>
-        <input type="number" id="deposit" placeholder="يجب دفع 50% على الأقل" required class ="textarea">
-    
-        <button type="submit" class="btn">🚀 تأكيد الطلب الآن</button>
-    
-        <p id="error-message" style="color: red; display: none; font-weight: bold;">
-            ❌ يجب دفع **50% على الأقل** من المبلغ لإتمام الطلب!
-        </p>
-    </form>
+   
     <script type="module" src="script.js"></script>
-    
-    
-    <script>
-    document.getElementById("checkout-form").addEventListener("submit", function(event) {
-        event.preventDefault(); // منع الإرسال التلقائي
-    
-        let totalPrice = parseFloat(document.getElementById("total-price").value);
-        let deposit = parseFloat(document.getElementById("deposit").value);
-        let requiredDeposit = totalPrice * 0.5; // 50% من المبلغ المطلوب
-    
-        if (deposit < requiredDeposit) {
-            document.getElementById("error-message").style.display = "block";
-        } else {
-            alert("🎉 تم تأكيد الطلب بنجاح! شكرًا لتسوقك معنا 🛒");
-            // هنا يمكنك تنفيذ كود إرسال الطلب إلى الخادم
-        }
-    });
-    document.addEventListener("DOMContentLoaded", function () {
-            let cart = JSON.parse(localStorage.getItem("cart")) || [];
-            updateCart();
-
-            document.querySelectorAll(".add-to-cart").forEach(button => {
-                button.addEventListener("click", function () {
-                    let name = this.getAttribute("data-name");
-                    let price = this.getAttribute("data-price");
-                    cart.push({ name, price });
-                    localStorage.setItem("cart", JSON.stringify(cart));
-                    updateCart();
-                });
-            });
-        });
-
-        function updateCart() {
-            let cart = JSON.parse(localStorage.getItem("cart")) || [];
-            let cartList = document.getElementById("cart-list");
-            let cartCount = document.getElementById("cart-count");
-            cartList.innerHTML = "";
-            if (cart.length === 0) {
-                document.getElementById("empty-cart").style.display = "block";
-            } else {
-                document.getElementById("empty-cart").style.display = "none";
-                cart.forEach(item => {
-                    let li = document.createElement("li");
-                    li.textContent = `${item.name} - $${item.price}`;
-                    cartList.appendChild(li);
-                });
-            }
-            cartCount.textContent = cart.length;
-        }
-    </script>
-    
-    
 
     <footer>
         <p>&copy; 2025 متجرك - جميع الحقوق محفوظة</p>
     </footer>
-<script type="module" src="script.js"></script>
-
 </body>
 </html>

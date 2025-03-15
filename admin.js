@@ -1,5 +1,5 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.2/firebase-app.js";
-import { getFirestore, collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.7.2/firebase-firestore.js";
+import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.7.2/firebase-firestore.js";
 
 // إعداد Firebase
 const firebaseConfig = {
@@ -47,6 +47,20 @@ document.getElementById("productForm").addEventListener("submit", async function
     }
 });
 
+// حذف المنتج
+async function deleteProduct(productId) {
+    if (!confirm("⚠️ هل أنت متأكد من حذف هذا المنتج؟")) return;
+
+    try {
+        await deleteDoc(doc(db, "products", productId));
+        alert("🗑️ تم حذف المنتج بنجاح!");
+        loadProducts(); // تحديث القائمة بعد الحذف
+    } catch (error) {
+        console.error("❌ خطأ أثناء حذف المنتج:", error);
+        alert("حدث خطأ أثناء حذف المنتج، حاول مرة أخرى!");
+    }
+}
+
 // تحميل المنتجات وعرضها في القائمة
 async function loadProducts() {
     const productsContainer = document.getElementById("admin-products");
@@ -54,8 +68,9 @@ async function loadProducts() {
 
     try {
         const querySnapshot = await getDocs(collection(db, "products"));
-        querySnapshot.forEach((doc) => {
-            const product = doc.data();
+        querySnapshot.forEach((docSnap) => {
+            const product = docSnap.data();
+            const productId = docSnap.id; // معرف المنتج في Firestore
             const productElement = document.createElement("div");
             productElement.classList.add("product");
 
@@ -65,6 +80,7 @@ async function loadProducts() {
                 <p>السعر: ${product.price} جنيه</p>
                 <p>${product.description}</p>
                 ${product.freeShipping ? '<p style="color: green;">🚚 شحن مجاني</p>' : ''}
+                <button onclick="deleteProduct('${productId}')" style="background-color:red; color:white; padding:5px 10px; border:none; cursor:pointer;">🗑️ حذف</button>
             `;
             productsContainer.appendChild(productElement);
         });

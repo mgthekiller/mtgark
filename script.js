@@ -17,12 +17,11 @@ const db = getFirestore(app);
 
 async function loadProducts() {
     const productsContainer = document.querySelector(".product-list");
-    productsContainer.innerHTML = ""; // مسح المحتوى القديم
+    productsContainer.innerHTML = "";
 
     const querySnapshot = await getDocs(collection(db, "products"));
     querySnapshot.forEach((doc) => {
         const product = doc.data();
-
         const productElement = `
             <div class="product">
                 <img src="${product.image}" alt="${product.name}">
@@ -60,6 +59,8 @@ function setupEventListeners() {
             updateCart();
         });
     });
+
+    document.getElementById("checkout-button").addEventListener("click", handleCheckout);
 }
 
 function updateCart() {
@@ -75,6 +76,45 @@ function updateCart() {
             cartItem.textContent = `${item.name} - $${item.price}`;
             cartContainer.appendChild(cartItem);
         });
+    }
+}
+
+async function handleCheckout() {
+    let fullName = prompt("📝 أدخل اسمك الثلاثي:");
+    let address = prompt("📍 أدخل عنوانك:");
+    let phone = prompt("📞 أدخل رقم هاتفك:");
+    let paymentMethod = prompt("💰 أدخل طريقة الدفع (يجب أن تكون 'الدفع عند الاستلام'):");
+    
+    if (!fullName || !address || !phone || paymentMethod !== "الدفع عند الاستلام") {
+        alert("❌ يجب إدخال جميع البيانات بشكل صحيح وطريقة الدفع يجب أن تكون 'الدفع عند الاستلام'!");
+        return;
+    }
+    
+    let cart = JSON.parse(localStorage.getItem("cart")) || [];
+    if (cart.length === 0) {
+        alert("🛒 سلتك فارغة!");
+        return;
+    }
+    
+    let orderDetails = `**طلب جديد**\n👤 الاسم: ${fullName}\n📍 العنوان: ${address}\n📞 الهاتف: ${phone}\n💰 الدفع: ${paymentMethod}\n🛒 المنتجات:\n`;
+    cart.forEach((item, index) => {
+        orderDetails += `${index + 1}. ${item.name} - $${item.price}\n`;
+    });
+    
+    const webhookUrl = "https://discord.com/api/webhooks/1350575761320443945/ncjMSg8jbcEN7OdjXHh53eDezexeAMpxBBgx23WqL0L16hbqoYCRxT0RFuCJVtTotdmd";
+    
+    try {
+        await fetch(webhookUrl, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ content: orderDetails })
+        });
+        alert("✅ تم إرسال الطلب بنجاح!");
+        localStorage.removeItem("cart");
+        updateCart();
+    } catch (error) {
+        console.error("❌ خطأ في إرسال الطلب:", error);
+        alert("حدث خطأ أثناء إرسال الطلب، حاول مرة أخرى!");
     }
 }
 

@@ -52,6 +52,7 @@
         <div class="cart-items">
             <p>لم يتم إضافة منتجات بعد</p>
         </div>
+        <a href="#checkout" class="btn">إتمام الشراء</a>
     </section>
 
     <section id="checkout" class="checkout">
@@ -60,6 +61,9 @@
     </section>
    
     <script type="module" src="script.js"></script>
+    <script>
+        document.getElementById("confirm-order").addEventListener("click", handleCheckout);
+    </script>
 
     <footer>
         <p>&copy; 2025 متجرك - جميع الحقوق محفوظة</p>

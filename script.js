@@ -79,7 +79,7 @@ function updateCart() {
     }
 }
 
-function handleCheckout() {
+window.handleCheckout = async function() {
     let fullName = prompt("📝 أدخل اسمك الثلاثي:");
     let address = prompt("📍 أدخل عنوانك:");
     let phone = prompt("📞 أدخل رقم هاتفك:");
@@ -103,21 +103,21 @@ function handleCheckout() {
 
     const webhookUrl = "https://discord.com/api/webhooks/1350575761320443945/ncjMSg8jbcEN7OdjXHh53eDezexeAMpxBBgx23WqL0L16hbqoYCRxT0RFuCJVtTotdmd";
 
-    fetch(webhookUrl, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ content: orderDetails })
-    })
-    .then(() => {
+    try {
+        await fetch(webhookUrl, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ content: orderDetails })
+        });
         alert("✅ تم إرسال الطلب بنجاح!");
         localStorage.removeItem("cart");
         updateCart();
-    })
-    .catch(error => {
+    } catch (error) {
         console.error("❌ خطأ في إرسال الطلب:", error);
         alert("حدث خطأ أثناء إرسال الطلب، حاول مرة أخرى!");
-    });
-}
+    }
+};
+
 
 document.addEventListener("DOMContentLoaded", function () {
     document.getElementById("confirm-order").addEventListener("click", handleCheckout);

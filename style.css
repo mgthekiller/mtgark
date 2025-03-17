@@ -72,7 +72,7 @@ nav ul li a {
 /* تصميم شبكة المنتجات */
 .product-list {
     display: grid;
-    grid-template-columns: repeat(3, 1fr); /* 3 منتجات في كل صف */
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* شبكة ديناميكية */
     gap: 20px;
     justify-content: center;
 }
@@ -91,10 +91,11 @@ nav ul li a {
     box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.15);
 }
 
-/* إجبار حجم الصور على 512x512 */
+/* إجبار حجم الصور على 300x300 */
 .product img {
-    width: 300px;
-    height: 300px;
+    width: 100%;
+    max-width: 300px;
+    height: auto;
     object-fit: cover;
     border-radius: 8px;
 }
@@ -136,6 +137,8 @@ footer {
     background-color: #333;
     color: white;
 }
+
+/* تحسين إدخال النص */
 input[type="text"] {
     width: 100%; /* ملء العرض بالكامل */
     padding: 12px;
@@ -151,4 +154,34 @@ input[type="text"]:focus {
     border-color: #ff4800; /* لون مميز عند التركيز */
     background-color: #fff8f0; /* لون خفيف عند الكتابة */
     box-shadow: 0px 3px 15px rgba(255, 72, 0, 0.4);
+}
+
+/* تحسين العرض على الموبايل */
+@media (max-width: 768px) {
+    body {
+        padding: 10px;
+    }
+
+    header {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    nav ul {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .hero {
+        padding: 30px;
+    }
+
+    .product-list {
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    }
+
+    .product img {
+        max-width: 100%;
+        height: auto;
+    }
 }

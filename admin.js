@@ -22,7 +22,7 @@ document.getElementById("productForm").addEventListener("submit", async function
     const price = document.getElementById("productPrice").value.trim();
     const description = document.getElementById("productDescription").value.trim();
     const imageUrl = document.getElementById("productImage").value.trim();
-    const freeShipping = document.getElementById("freeShipping").checked; // تحقق من حالة الشحن المجاني
+    const freeShipping = document.getElementById("freeShipping").checked;
 
     if (!name || !price || !description || !imageUrl) {
         alert("❌ يرجى ملء جميع الحقول!");
@@ -30,17 +30,18 @@ document.getElementById("productForm").addEventListener("submit", async function
     }
 
     try {
-        await addDoc(collection(db, "products"), {
+        const docRef = await addDoc(collection(db, "products"), {
             name,
             price: parseFloat(price),
             description,
             image: imageUrl,
-            freeShipping // إضافة حالة الشحن المجاني
+            freeShipping
         });
 
+        console.log("تمت إضافة المنتج بمعرف:", docRef.id);
         alert("✅ تم إضافة المنتج بنجاح!");
         document.getElementById("productForm").reset();
-        loadProducts(); // تحديث قائمة المنتجات مباشرة بعد الإضافة
+        loadProducts();
     } catch (error) {
         console.error("❌ خطأ أثناء إضافة المنتج:", error);
         alert("حدث خطأ أثناء إضافة المنتج، حاول مرة أخرى!");
@@ -52,9 +53,11 @@ async function deleteProduct(productId) {
     if (!confirm("⚠️ هل أنت متأكد من حذف هذا المنتج؟")) return;
 
     try {
-        await deleteDoc(doc(db, "products", productId));
+        console.log("🔍 حذف المنتج بمعرف:", productId);
+        const productRef = doc(db, "products", productId);
+        await deleteDoc(productRef);
         alert("🗑️ تم حذف المنتج بنجاح!");
-        loadProducts(); // تحديث القائمة بعد الحذف
+        loadProducts(); 
     } catch (error) {
         console.error("❌ خطأ أثناء حذف المنتج:", error);
         alert("حدث خطأ أثناء حذف المنتج، حاول مرة أخرى!");
@@ -64,13 +67,13 @@ async function deleteProduct(productId) {
 // تحميل المنتجات وعرضها في القائمة
 async function loadProducts() {
     const productsContainer = document.getElementById("admin-products");
-    productsContainer.innerHTML = ""; // تفريغ القائمة قبل إعادة التحميل
+    productsContainer.innerHTML = ""; 
 
     try {
         const querySnapshot = await getDocs(collection(db, "products"));
         querySnapshot.forEach((docSnap) => {
             const product = docSnap.data();
-            const productId = docSnap.id; // معرف المنتج في Firestore
+            const productId = docSnap.id; 
             const productElement = document.createElement("div");
             productElement.classList.add("product");
 
@@ -82,6 +85,7 @@ async function loadProducts() {
                 ${product.freeShipping ? '<p style="color: green;">🚚 شحن مجاني</p>' : ''}
                 <button onclick="deleteProduct('${productId}')" style="background-color:red; color:white; padding:5px 10px; border:none; cursor:pointer;">🗑️ حذف</button>
             `;
+
             productsContainer.appendChild(productElement);
         });
     } catch (error) {

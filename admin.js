@@ -15,7 +15,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-document.getElementById("productForm").addEventListener("submit", async function(event) {
+document.getElementById("productForm").addEventListener("submit", async function (event) {
     event.preventDefault();
 
     const name = document.getElementById("productName").value.trim();
@@ -41,7 +41,7 @@ document.getElementById("productForm").addEventListener("submit", async function
         console.log("تمت إضافة المنتج بمعرف:", docRef.id);
         alert("✅ تم إضافة المنتج بنجاح!");
         document.getElementById("productForm").reset();
-        loadProducts();
+        await loadProducts(); // تحميل المنتجات بعد الإضافة
     } catch (error) {
         console.error("❌ خطأ أثناء إضافة المنتج:", error);
         alert("حدث خطأ أثناء إضافة المنتج، حاول مرة أخرى!");
@@ -55,9 +55,9 @@ async function deleteProduct(productId) {
     try {
         console.log("🔍 حذف المنتج بمعرف:", productId);
         const productRef = doc(db, "products", productId);
-        await deleteDoc(productRef);
+        await deleteDoc(productRef); // تأكد من استخدام `await`
         alert("🗑️ تم حذف المنتج بنجاح!");
-        loadProducts(); 
+        await loadProducts(); // تحديث القائمة بعد الحذف
     } catch (error) {
         console.error("❌ خطأ أثناء حذف المنتج:", error);
         alert("حدث خطأ أثناء حذف المنتج، حاول مرة أخرى!");
@@ -67,13 +67,15 @@ async function deleteProduct(productId) {
 // تحميل المنتجات وعرضها في القائمة
 async function loadProducts() {
     const productsContainer = document.getElementById("admin-products");
-    productsContainer.innerHTML = ""; 
+    productsContainer.innerHTML = "";
 
     try {
         const querySnapshot = await getDocs(collection(db, "products"));
         querySnapshot.forEach((docSnap) => {
             const product = docSnap.data();
-            const productId = docSnap.id; 
+            const productId = docSnap.id;
+            console.log("📦 تحميل المنتج:", product.name, "ID:", productId);
+
             const productElement = document.createElement("div");
             productElement.classList.add("product");
 
@@ -94,4 +96,7 @@ async function loadProducts() {
 }
 
 // تحميل المنتجات عند فتح الصفحة
-window.onload = loadProducts;
+window.onload = async () => {
+    console.log("🔄 تحميل المنتجات...");
+    await loadProducts();
+};

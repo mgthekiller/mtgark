@@ -37,6 +37,11 @@ nav ul li a {
     padding: 50px;
     background-color: #ff9800;
     color: white;
+    height: 100vh; /* جعل العنصر يمتد لكامل الصفحة */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 }
 
 /* زرار الشراء والتفاعل */

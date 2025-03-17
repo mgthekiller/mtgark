@@ -5,14 +5,99 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>تسجيل الدخول</title>
     <script type="module" src="login.js"></script>
+    <style>
+        /* استايل أساسي */
+body {
+    font-family: Arial, sans-serif;
+    background: #f5f5f5;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+
+.login-container {
+    background: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    width: 350px;
+}
+
+h2 {
+    color: #333;
+}
+
+.input-group {
+    margin-bottom: 15px;
+}
+
+input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+input:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+}
+
+button {
+    width: 100%;
+    padding: 10px;
+    background: #007bff;
+    border: none;
+    color: white;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+button:hover {
+    background: #0056b3;
+}
+
+.social-login {
+    margin-top: 15px;
+}
+
+#google-login {
+    background: #db4437;
+}
+
+#google-login:hover {
+    background: #c1351d;
+}
+
+#error-message {
+    color: red;
+    margin-top: 10px;
+}
+
+    </style>
 </head>
 <body>
-    <h2>تسجيل الدخول</h2>
-    <form id="login-form">
-        <input type="email" id="email" placeholder="البريد الإلكتروني" required>
-        <input type="password" id="password" placeholder="كلمة المرور" required>
-        <button type="submit">تسجيل الدخول</button>
-    </form>
-    <p id="error-message"></p>
+    <div class="login-container">
+        <h2>تسجيل الدخول</h2>
+        <form id="login-form">
+            <div class="input-group">
+                <input type="email" id="email" placeholder="✉️ البريد الإلكتروني" required>
+            </div>
+            <div class="input-group">
+                <input type="password" id="password" placeholder="🔑 كلمة المرور" required>
+            </div>
+            <button type="submit">🚀 تسجيل الدخول</button>
+            <p id="error-message"></p>
+        </form>
+        <div class="social-login">
+            <button id="google-login">🔵 تسجيل الدخول بحساب Google</button>
+        </div>
+    </div>
 </body>
 </html>

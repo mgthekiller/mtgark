@@ -37,7 +37,6 @@ nav ul li a {
     padding: 50px;
     background-color: #ff9800;
     color: white;
-    height: 100vh; /* جعل العنصر يمتد لكامل الصفحة */
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -179,6 +178,7 @@ input[type="text"]:focus {
 
     .hero {
         padding: 30px;
+        height: 100vh;
     }
 
     .product-list {

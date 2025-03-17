@@ -15,6 +15,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
+// إضافة منتج جديد
 document.getElementById("productForm").addEventListener("submit", async function (event) {
     event.preventDefault();
 
@@ -38,33 +39,17 @@ document.getElementById("productForm").addEventListener("submit", async function
             freeShipping
         });
 
-        console.log("تمت إضافة المنتج بمعرف:", docRef.id);
+        console.log("✅ تمت إضافة المنتج بمعرف:", docRef.id);
         alert("✅ تم إضافة المنتج بنجاح!");
         document.getElementById("productForm").reset();
-        await loadProducts(); // تحميل المنتجات بعد الإضافة
+        await loadProducts(); // تحديث القائمة بعد الإضافة
     } catch (error) {
         console.error("❌ خطأ أثناء إضافة المنتج:", error);
-        alert("حدث خطأ أثناء إضافة المنتج، حاول مرة أخرى!");
+        alert("❌ حدث خطأ أثناء إضافة المنتج، حاول مرة أخرى!");
     }
 });
 
-// حذف المنتج
-async function deleteProduct(productId) {
-    if (!confirm("⚠️ هل أنت متأكد من حذف هذا المنتج؟")) return;
-
-    try {
-        console.log("🔍 حذف المنتج بمعرف:", productId);
-        const productRef = doc(db, "products", productId);
-        await deleteDoc(productRef); // تأكد من استخدام `await`
-        alert("🗑️ تم حذف المنتج بنجاح!");
-        await loadProducts(); // تحديث القائمة بعد الحذف
-    } catch (error) {
-        console.error("❌ خطأ أثناء حذف المنتج:", error);
-        alert("حدث خطأ أثناء حذف المنتج، حاول مرة أخرى!");
-    }
-}
-
-// تحميل المنتجات وعرضها في القائمة
+// تحميل المنتجات وعرضها
 async function loadProducts() {
     const productsContainer = document.getElementById("admin-products");
     productsContainer.innerHTML = "";
@@ -79,21 +64,52 @@ async function loadProducts() {
             const productElement = document.createElement("div");
             productElement.classList.add("product");
 
+            // إنشاء الزر وإضافة الحدث برمجيًا بدلًا من `onclick`
+            const deleteButton = document.createElement("button");
+            deleteButton.textContent = "🗑️ حذف";
+            deleteButton.style.cssText = "background-color:red; color:white; padding:5px 10px; border:none; cursor:pointer;";
+            deleteButton.addEventListener("click", () => deleteProduct(productId));
+
             productElement.innerHTML = `
                 <img src="${product.image}" alt="${product.name}" style="width:100px; height:100px;">
                 <h3>${product.name}</h3>
                 <p>السعر: ${product.price} جنيه</p>
                 <p>${product.description}</p>
                 ${product.freeShipping ? '<p style="color: green;">🚚 شحن مجاني</p>' : ''}
-                <button onclick="deleteProduct('${productId}')" style="background-color:red; color:white; padding:5px 10px; border:none; cursor:pointer;">🗑️ حذف</button>
             `;
 
+            productElement.appendChild(deleteButton);
             productsContainer.appendChild(productElement);
         });
     } catch (error) {
         console.error("❌ خطأ أثناء تحميل المنتجات:", error);
     }
 }
+
+// حذف المنتج
+window.deleteProduct = async function(productId) {
+    if (!confirm("⚠️ هل أنت متأكد من حذف هذا المنتج؟")) return;
+
+    try {
+        console.log("🔍 محاولة حذف المنتج بمعرف:", productId);
+        if (!productId) {
+            console.error("❌ المعرف غير صحيح:", productId);
+            alert("❌ لا يمكن حذف المنتج، المعرف غير صحيح!");
+            return;
+        }
+
+        const productRef = doc(db, "products", productId);
+        await deleteDoc(productRef);
+
+        console.log("✅ تم حذف المنتج:", productId);
+        alert("🗑️ تم حذف المنتج بنجاح!");
+
+        await loadProducts(); // تحديث القائمة بعد الحذف
+    } catch (error) {
+        console.error("❌ خطأ أثناء حذف المنتج:", error);
+        alert("❌ حدث خطأ أثناء حذف المنتج، حاول مرة أخرى!");
+    }
+};
 
 // تحميل المنتجات عند فتح الصفحة
 window.onload = async () => {
